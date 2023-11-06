@@ -132,6 +132,8 @@ Mpris::Mpris(const std::string& id, const Json::Value& config)
   g_object_connect(manager, "signal::name-appeared", G_CALLBACK(onPlayerNameAppeared), this, NULL);
   g_object_connect(manager, "signal::name-vanished", G_CALLBACK(onPlayerNameVanished), this, NULL);
 
+  g_object_connect(manager, "signal::properties-changed", G_CALLBACK(onPropertiesChanged), this, NULL);
+  
   if (player_ == "playerctld") {
     // use playerctld proxy
     PlayerctlPlayerName name = {
@@ -403,6 +405,20 @@ auto Mpris::getDynamicStr(const PlayerInfo& info, bool truncated, bool html) -> 
   }
   return dynamic.str();
 }
+
+auto Mpris::onPropertiesChanged(PlayerctlPlayerManager* manager, PlayerctlPlayerName* player_name,
+                                gpointer data) -> void{
+  Mpris* mpris = static_cast<Mpris*>(data);
+  if (!mpris) return;
+
+  spdlog::debug("mpris: properties-changed callback: {}", player_name->name);
+
+  if (std::string(player_name->name) != mpris->player_) {
+    return;
+  }
+
+  mpris->update();
+  }
 
 auto Mpris::onPlayerNameAppeared(PlayerctlPlayerManager* manager, PlayerctlPlayerName* player_name,
                                  gpointer data) -> void {

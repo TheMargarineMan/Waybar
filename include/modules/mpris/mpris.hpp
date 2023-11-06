@@ -24,6 +24,7 @@ class Mpris : public ALabel {
   bool handleToggle(GdkEventButton* const&) override;
 
  private:
+  static auto onPropertiesChanged(PlayerctlPlayerManager*, PlayerctlPlayerName*, gpointer) -> void;
   static auto onPlayerNameAppeared(PlayerctlPlayerManager*, PlayerctlPlayerName*, gpointer) -> void;
   static auto onPlayerNameVanished(PlayerctlPlayerManager*, PlayerctlPlayerName*, gpointer) -> void;
   static auto onPlayerPlay(PlayerctlPlayer*, gpointer) -> void;
